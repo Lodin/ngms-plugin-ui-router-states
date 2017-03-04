@@ -1,0 +1,60 @@
+{
+  "name": "ngms-plugin-ui-router-states",
+  "version": "1.0.0-alpha.0",
+  "description": "Plugin for ng-metasys supports angular-ui-router states",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "karma start config/karma.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lodin/ngms-plugin-ui-router-states.git"
+  },
+  "keywords": [
+    "ng-metasys",
+    "angular",
+    "ui-router",
+    "router",
+    "plugin",
+    "decorator"
+  ],
+  "author": "Vlad Rindevich",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Lodin/ngms-plugin-ui-router-states/issues"
+  },
+  "homepage": "https://github.com/Lodin/ngms-plugin-ui-router-states#readme",
+  "peerDependencies": {
+    "angular": "^1.5.0",
+    "angular-ui-router": "^1.0.0-rc.1",
+    "ng-metasys": "^1.0.0-alpha.1",
+    "tslib": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/angular": "^1.6.7",
+    "@types/jasmine": "^2.5.43",
+    "awesome-typescript-loader": "^3.0.4-rc.0",
+    "codecov": "^1.0.1",
+    "copyfiles": "^1.2.0",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.4.1",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-mocha-reporter": "^2.2.2",
+    "karma-remap-istanbul": "^0.6.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^2.0.2",
+    "ng-metasys": "file:///D:\\Creation\\1.Programming\\javascript\\ng-metasys",
+    "rimraf": "^2.5.4",
+    "source-map-loader": "^0.1.6",
+    "sourcemap-istanbul-instrumenter-loader": "^0.2.0",
+    "tslint": "^4.4.2",
+    "tslint-eslint-rules": "^3.3.0",
+    "tslint-loader": "^3.3.0",
+    "typescript": "^2.2.0",
+    "webpack": "^2.2.1"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.10"
+  }
+}

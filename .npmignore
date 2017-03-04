@@ -1,0 +1,5 @@
+.idea
+.editorconfig
+config
+coverage
+npm-debug.log
