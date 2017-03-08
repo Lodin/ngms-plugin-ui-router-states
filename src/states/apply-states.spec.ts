@@ -23,7 +23,6 @@ describe('Function `applyStates`', () => {
   });
 
   it('should initialize states', () => {
-    bootstrapper.isComponent.and.returnValue(true);
     bootstrapper.getMetadata.and.returnValue({name: 'state'});
 
     class StateComponent {}
@@ -36,8 +35,6 @@ describe('Function `applyStates`', () => {
 
     applyStates(bootstrapper.ngModule as any, [state]);
 
-    expect(bootstrapper.isComponent).toHaveBeenCalledWith(StateComponent);
-    expect(bootstrapper.getMetadata).toHaveBeenCalledWith(StateComponent);
     expect(bootstrapper.ngModule.config).toHaveBeenCalledWith([
       '$stateProvider',
       jasmine.any(Function)
@@ -45,6 +42,8 @@ describe('Function `applyStates`', () => {
 
     const callback = bootstrapper.ngModule.config.calls.argsFor(0)[0][1];
     callback(bootstrapper.$stateProvider);
+
+    expect(bootstrapper.getMetadata).toHaveBeenCalledWith(StateComponent);
 
     expect(bootstrapper.$stateProvider.state).toHaveBeenCalledWith({
       name: 'app.state',
@@ -75,8 +74,8 @@ describe('Function `applyStates`', () => {
     });
   });
 
-  it('should throw an error if defined component is not a component', () => {
-    bootstrapper.isComponent.and.returnValue(false);
+  it('should add hooks to the state if any exists', () => {
+    bootstrapper.getMetadata.and.returnValue({name: 'state'});
 
     class StateComponent {}
 
@@ -86,7 +85,27 @@ describe('Function `applyStates`', () => {
       component: StateComponent
     };
 
-    expect(() => applyStates(bootstrapper.ngModule as any, [state]))
-      .toThrowError('Declration StateComponent is not found in registry');
+    const onEnter = () => {};
+    const onExit = () => {};
+
+    const hooks = new Map([[StateComponent, {onEnter, onExit}]]);
+
+    applyStates(bootstrapper.ngModule as any, [state], hooks);
+
+    expect(bootstrapper.ngModule.config).toHaveBeenCalledWith([
+      '$stateProvider',
+      jasmine.any(Function)
+    ]);
+
+    const callback = bootstrapper.ngModule.config.calls.argsFor(0)[0][1];
+    callback(bootstrapper.$stateProvider);
+
+    expect(bootstrapper.$stateProvider.state).toHaveBeenCalledWith({
+      name: 'app.state',
+      url: '/state',
+      component: 'state',
+      onEnter,
+      onExit
+    });
   });
 });
