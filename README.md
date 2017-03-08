@@ -94,7 +94,7 @@ import {AppComponent} from './app-component';
   {name: 'app', url: '', abstract: true, component: AppComponent},
 ])
 export class AppModule {
-  @OnEnter('app')
+  @OnEnter(AppComponent)
   static onAppEnter($transition$, $state$) {
     // implement transition hook
   }

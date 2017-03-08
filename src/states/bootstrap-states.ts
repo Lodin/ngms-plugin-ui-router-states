@@ -1,5 +1,7 @@
 import * as tokens from '../core/tokens';
+import bootstrapHooks from '../hooks/bootstrap-module-hooks';
 import applyStates from './apply-states';
+import checkComponent from './check-component';
 import {StateDeclaration} from './state-declaration';
 
 type BootstrapStates = (ngModule: angular.IModule, declaration: any) => void;
@@ -12,7 +14,13 @@ const bootstrapStates: BootstrapStates =
     const states: StateDeclaration[] =
       Reflect.getMetadata(tokens.states, declaration.prototype);
 
-    applyStates(ngModule, states);
+    for (const state of states) {
+      checkComponent(state.component);
+    }
+
+    const hooks = bootstrapHooks(declaration) || undefined;
+
+    applyStates(ngModule, states, hooks);
   };
 
 export {BootstrapStates};
