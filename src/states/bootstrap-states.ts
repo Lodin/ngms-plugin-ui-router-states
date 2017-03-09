@@ -1,5 +1,6 @@
 import * as tokens from '../core/tokens';
-import bootstrapHooks from '../hooks/bootstrap-module-hooks';
+import bootstrapHooks from '../hooks/bootstrap-hooks';
+import {Hooks} from '../hooks/hooks';
 import applyStates from './apply-states';
 import checkComponent from './check-component';
 import {StateDeclaration} from './state-declaration';
@@ -18,7 +19,7 @@ const bootstrapStates: BootstrapStates =
       checkComponent(state.component);
     }
 
-    const hooks = bootstrapHooks(declaration) || undefined;
+    const hooks = bootstrapHooks(declaration) as Map<any, Hooks> || undefined;
 
     applyStates(ngModule, states, hooks);
   };

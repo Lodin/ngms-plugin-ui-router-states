@@ -1,10 +1,10 @@
-import {ModuleMetadata, tokens as ngmsTokens, isComponent} from 'ng-metasys';
+import {ModuleMetadata, tokens as ngmsTokens} from 'ng-metasys';
 import * as tokens from '../core/tokens';
 import {Hooks} from '../hooks/hooks';
 import {StateDeclaration} from './state-declaration';
 import applyStates from './apply-states';
 import checkComponent from './check-component';
-import bootstrapComponentHooks from '../hooks/bootstrap-component-hooks';
+import bootstrapHooks from '../hooks/bootstrap-hooks';
 
 type BootstrapState = (ngModule: angular.IModule, declaration: any) => void;
 const bootstrapState: BootstrapState =
@@ -35,7 +35,7 @@ const bootstrapState: BootstrapState =
 
       if (state.component) {
         checkComponent(state.component);
-        const componentHooks = bootstrapComponentHooks(state.component);
+        const componentHooks = bootstrapHooks(state.component) as Hooks|null;
 
         if (componentHooks) {
           hooks.set(state.component, componentHooks);
