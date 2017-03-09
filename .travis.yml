@@ -17,7 +17,7 @@ before_install:
   - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
   - sudo dpkg -i google-chrome*.deb
   - npm -g install npm@latest
-  - npm install angular tslib ng-metasys
+  - npm install angular tslib ng-metasys angular-ui-router@next
 script: npm test -- --timeout 15000
 after_success:
   - cat coverage/lcov/lcov.info | ./node_modules/.bin/codecov
