@@ -27,7 +27,7 @@
   "peerDependencies": {
     "angular": "^1.5.0",
     "angular-ui-router": "^1.0.0-rc.1",
-    "ng-metasys": "^1.0.0-alpha.1",
+    "ng-metasys": "^1.0.0-alpha.0",
     "tslib": "^1.6.0"
   },
   "devDependencies": {
@@ -44,7 +44,6 @@
     "karma-remap-istanbul": "^0.6.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.2",
-    "ng-metasys": "file:///D:\\Creation\\1.Programming\\javascript\\ng-metasys",
     "rimraf": "^2.5.4",
     "source-map-loader": "^0.1.6",
     "sourcemap-istanbul-instrumenter-loader": "^0.2.0",
