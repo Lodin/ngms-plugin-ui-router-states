@@ -6,16 +6,16 @@ type HookNames = 'onEnter'|'onExit'|'onRetain';
 type SetModuleHook = (hook: HookNames, component: any, property: string, target: any) => void;
 const setModuleHook: SetModuleHook =
   (hook, component, property, target) => {
-    if (!Reflect.hasMetadata(tokens.hooks, target)) {
+    if (!Reflect.hasMetadata(tokens.hooks, target.prototype)) {
       Reflect.defineMetadata(
         tokens.hooks,
-        new Map<any, Hooks>([[target, {[hook]: target[property]}]]),
-        target
+        new Map<any, Hooks>([[component, {[hook]: target[property]}]]),
+        target.prototype
       );
       return;
     }
 
-    const metadata = Reflect.getMetadata(tokens.hooks, target) as Map<any, Hooks>;
+    const metadata = Reflect.getMetadata(tokens.hooks, target.prototype) as Map<any, Hooks>;
 
     if (!metadata.has(component)) {
       metadata.set(component, {[hook]: target[property]});
@@ -27,24 +27,24 @@ const setModuleHook: SetModuleHook =
 type SetComponentHook = (hook: HookNames, property: string, target: any) => void;
 const setComponentHook: SetComponentHook =
   (hook, property, target) => {
-    if (!Reflect.hasMetadata(tokens.hooks, target)) {
-      Reflect.defineMetadata(tokens.hooks, {[hook]: target[property]}, target);
+    if (!Reflect.hasMetadata(tokens.hooks, target.prototype)) {
+      Reflect.defineMetadata(tokens.hooks, {[hook]: target[property]}, target.prototype);
       return;
     }
 
-    Reflect.getMetadata(tokens.hooks, target)[hook] = target[property];
+    Reflect.getMetadata(tokens.hooks, target.prototype)[hook] = target[property];
   };
 
 type HookFactory =
   (hook: HookNames) =>
     (component?: any) =>
-      (target: any, property: string, descriptor?: PropertyDescriptor) => void;
+      (target: any, property: string) => void;
 
 const hookFactory: HookFactory =
   hook =>
     component =>
-      (target, property, descriptor) => {
-        if (!descriptor || (descriptor as any).initializer) {
+      (target, property) => {
+        if (typeof target !== 'function') {
           throw new Error(`Hook "${hook}" have to be applied to the static method`);
         }
 
