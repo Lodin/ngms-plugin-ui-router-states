@@ -1,4 +1,5 @@
 import {isComponent} from 'ng-metasys';
+import {StateDeclaration} from './state-declaration';
 
 type CheckComponent = (declaration: any) => void;
 const checkComponent: CheckComponent =
@@ -13,5 +14,17 @@ const checkComponent: CheckComponent =
     }
   };
 
-export {CheckComponent};
-export default checkComponent;
+type CheckState = (state: StateDeclaration) => void;
+const checkState: CheckState =
+  state => {
+    if (!state.name) {
+      throw new Error('State name should be set');
+    }
+  };
+
+export {
+  CheckComponent,
+  checkComponent,
+  CheckState,
+  checkState
+};

@@ -4,7 +4,7 @@ import bootstrapHooks from '../hooks/bootstrap-hooks';
 import {Hooks} from '../hooks/hooks';
 import {StateDeclaration} from './state-declaration';
 import applyStates from './apply-states';
-import checkComponent from './check-component';
+import {checkComponent, checkState} from './checkers';
 
 type InitComponent = (declaration: any) => [StateDeclaration, Hooks|null];
 const initComponent: InitComponent =
@@ -13,9 +13,7 @@ const initComponent: InitComponent =
 
     const state: StateDeclaration = Reflect.getMetadata(tokens.state, declaration.prototype);
 
-    if (!state.name) {
-      throw new Error(`State name for ${declaration.name} is not set`);
-    }
+    checkState(state);
 
     state.component = declaration;
 
