@@ -1,26 +1,9 @@
 import {ModuleMetadata, tokens as ngmsTokens} from 'ng-metasys';
 import * as tokens from '../core/tokens';
-import bootstrapHooks from '../hooks/bootstrap-hooks';
-import {Hooks} from '../hooks/hooks';
+import collectHooks from '../hooks/collect-hooks';
+import checkState from './check-state';
 import {StateDeclaration} from './state-declaration';
 import applyStates from './apply-states';
-import {checkComponent, checkState} from './checkers';
-
-type InitComponent = (declaration: any) => [StateDeclaration, Hooks|null];
-const initComponent: InitComponent =
-  declaration => {
-    checkComponent(declaration);
-
-    const state: StateDeclaration = Reflect.getMetadata(tokens.state, declaration.prototype);
-
-    checkState(state);
-
-    state.component = declaration;
-
-    const hooks = bootstrapHooks(state.component) as Hooks|null;
-
-    return [state, hooks];
-  };
 
 type BootstrapState = (ngModule: angular.IModule, declaration: any) => void;
 const bootstrapState: BootstrapState =
@@ -33,27 +16,25 @@ const bootstrapState: BootstrapState =
     }
 
     const states: StateDeclaration[] = [];
-    const hooks = new Map<any, Hooks>();
 
     for (const component of moduleMetadata.declarations) {
       if (!Reflect.hasMetadata(tokens.state, component.prototype)) {
         continue;
       }
 
-      const [state, componentHooks] = initComponent(component);
+      const state: StateDeclaration = Reflect.getMetadata(tokens.state, component.prototype);
+      state.component = component;
+
+      checkState(state);
 
       states.push(state);
-
-      if (componentHooks) {
-        hooks.set(state.component, componentHooks);
-      }
     }
 
     if (states.length === 0) {
       return;
     }
 
-    applyStates(ngModule, states, hooks);
+    applyStates(ngModule, states, collectHooks(states));
   };
 
 export {BootstrapState};

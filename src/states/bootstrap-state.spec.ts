@@ -1,16 +1,15 @@
 import {tokens as ngmsTokens} from 'ng-metasys';
 import * as tokens from '../core/tokens';
-import * as bootstrapHooks from '../hooks/bootstrap-hooks';
+import * as collectHooks from '../hooks/collect-hooks';
 import {Hooks} from '../hooks/hooks';
 import * as applyStates from './apply-states';
-import * as checkers from './checkers';
+import * as checkState from './check-state';
 import bootstrapState from './bootstrap-state';
 
 class Bootstrapper {
   public applyStates = spyOn(applyStates, 'default');
-  public checkComponent = spyOn(checkers, 'checkComponent');
-  public checkState = spyOn(checkers, 'checkState');
-  public bootstrapHooks = spyOn(bootstrapHooks, 'default');
+  public checkState = spyOn(checkState, 'default');
+  public collectHooks = spyOn(collectHooks, 'default');
 
   public ngModule = {};
 }
@@ -23,7 +22,7 @@ describe('Function "bootstrapState"', () => {
   });
 
   it('should create states', () => {
-    bootstrapper.bootstrapHooks.and.returnValue(null);
+    bootstrapper.collectHooks.and.returnValue(new Map<any, Hooks>());
 
     class Component {}
 
@@ -39,10 +38,10 @@ describe('Function "bootstrapState"', () => {
 
     bootstrapState(bootstrapper.ngModule as any, Module);
 
-    expect(bootstrapper.checkComponent).toHaveBeenCalledWith(Component);
-    expect(bootstrapper.checkState)
-      .toHaveBeenCalledWith({name: 'component', url: '/', component: Component});
-    expect(bootstrapper.bootstrapHooks).toHaveBeenCalledWith(Component);
+    const stateDeclaration = {name: 'component', url: '/', component: Component};
+
+    expect(bootstrapper.checkState).toHaveBeenCalledWith(stateDeclaration);
+    expect(bootstrapper.collectHooks).toHaveBeenCalledWith([stateDeclaration]);
     expect(bootstrapper.applyStates)
       .toHaveBeenCalledWith(bootstrapper.ngModule, [
         {name: 'component', url: '/', component: Component}
@@ -60,9 +59,8 @@ describe('Function "bootstrapState"', () => {
 
     bootstrapState(bootstrapper.ngModule as any, Module);
 
-    expect(bootstrapper.checkComponent).not.toHaveBeenCalled();
     expect(bootstrapper.checkState).not.toHaveBeenCalled();
-    expect(bootstrapper.bootstrapHooks).not.toHaveBeenCalled();
+    expect(bootstrapper.collectHooks).not.toHaveBeenCalled();
     expect(bootstrapper.applyStates).not.toHaveBeenCalled();
   });
 
@@ -80,9 +78,8 @@ describe('Function "bootstrapState"', () => {
 
     bootstrapState(bootstrapper.ngModule as any, Module);
 
-    expect(bootstrapper.checkComponent).not.toHaveBeenCalled();
     expect(bootstrapper.checkState).not.toHaveBeenCalled();
-    expect(bootstrapper.bootstrapHooks).not.toHaveBeenCalled();
+    expect(bootstrapper.collectHooks).not.toHaveBeenCalled();
     expect(bootstrapper.applyStates).not.toHaveBeenCalled();
   });
 
@@ -91,7 +88,7 @@ describe('Function "bootstrapState"', () => {
       public static onEnter() {}
     }
 
-    bootstrapper.bootstrapHooks.and.returnValue({onEnter: Component.onEnter});
+    bootstrapper.collectHooks.and.returnValue(new Map([[Component, {onEnter: Component.onEnter}]]));
 
     class Module {}
 
