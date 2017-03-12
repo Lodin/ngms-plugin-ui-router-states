@@ -4,7 +4,13 @@
   "description": "Plugin for ng-metasys supports angular-ui-router states",
   "main": "dist/index.js",
   "scripts": {
-    "test": "karma start config/karma.js"
+    "build": "npm run rm:dist && npm run tsc && npm run copy:dts",
+    "copy:dts": "cd src && copyfiles **/*.d.ts ../dist",
+    "lint": "tslint -c src/tslint.json src/**/*.ts -e src/**/*.spec.ts -e src/test.ts",
+    "prepublish": "npm run build",
+    "rm:dist": "rimraf dist",
+    "test": "karma start config/karma.js",
+    "tsc": "tsc -p tsconfig.json"
   },
   "repository": {
     "type": "git",
