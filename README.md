@@ -155,7 +155,11 @@ angular.module('AppModule')
     controller: AppComponent
   });
 ```
-Or you can even use `@States` on module and transition hooks decorators in component. 
+Or you can even use `@States` on module and transition hooks decorators in component.
+
+**Note:** hooks defined in module is more preferable than hooks defined in component. So if you
+have defined `onEnter` hook in component and in module for this component, hook in component will
+be overloaded by hook in module. 
 
 ## License
 Information about license can be found [here](./LICENSE).
