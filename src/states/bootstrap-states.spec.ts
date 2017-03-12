@@ -1,3 +1,4 @@
+import * as reflection from '../core/reflection';
 import * as tokens from '../core/tokens';
 import * as bootstrapHooks from '../hooks/bootstrap-hooks';
 import {Hooks} from '../hooks/hooks';
@@ -11,8 +12,25 @@ class Bootstrapper {
   public bootstrapHooks = spyOn(bootstrapHooks, 'default');
   public checkState = spyOn(checkState, 'default');
   public collectHooks = spyOn(collectHooks, 'default');
+  public isState = spyOn(reflection, 'isState');
 
   public ngModule = {};
+
+  public unarm(...toUnarm: string[]): void {
+    const hasAll = toUnarm.includes('all');
+
+    if (toUnarm.includes('bootstrapHooks') || hasAll) {
+      this.bootstrapHooks.and.returnValue(null);
+    }
+
+    if (toUnarm.includes('collectHooks') || hasAll) {
+      this.collectHooks.and.returnValue(new Map<any, Hooks>())
+    }
+
+    if (toUnarm.includes('isState') || hasAll) {
+      this.isState.and.returnValue(false);
+    }
+  }
 }
 
 describe('Function "bootstrapStates"', () => {
@@ -23,8 +41,7 @@ describe('Function "bootstrapStates"', () => {
   });
 
   it('should create states', () => {
-    bootstrapper.bootstrapHooks.and.returnValue(null);
-    bootstrapper.collectHooks.and.returnValue(new Map<any, Hooks>());
+    bootstrapper.unarm('all');
 
     const componentMetadata = {name: 'component', url: '/', component: Component};
 
@@ -45,8 +62,7 @@ describe('Function "bootstrapStates"', () => {
   });
 
   it('should do nothing if no states is defined for this module', () => {
-    bootstrapper.bootstrapHooks.and.returnValue(null);
-    bootstrapper.collectHooks.and.returnValue(new Map<any, Hooks>());
+    bootstrapper.unarm('all');
 
     class Component {}
     class Module {}
@@ -59,14 +75,33 @@ describe('Function "bootstrapStates"', () => {
     expect(bootstrapper.applyStates).not.toHaveBeenCalled();
   });
 
+  it('should throw an error if the state component is already defined as state', () => {
+    bootstrapper.unarm('bootstrapHooks', 'collectHooks');
+    bootstrapper.isState.and.returnValue(true);
+
+    class Component {}
+    class Module {}
+
+    const componentMetadata = {name: 'component', url: '/', component: Component};
+
+    Reflect.defineMetadata(tokens.states, [
+      componentMetadata
+    ], Module.prototype);
+
+    expect(() => bootstrapStates(bootstrapper.ngModule as any, Module))
+      .toThrowError('Component Component is already state. You cannot overload it '
+        + 'in module');
+  });
+
   it('should apply component hooks if any', () => {
+    bootstrapper.unarm('bootstrapHooks', 'isState');
+
     class Component {
       public static onExit() {}
     }
 
     class Module {}
 
-    bootstrapper.bootstrapHooks.and.returnValue(null);
     bootstrapper.collectHooks.and.returnValue(new Map<any, Hooks>([
       [Component, {onExit: Component.onExit}]
     ]));
@@ -90,6 +125,8 @@ describe('Function "bootstrapStates"', () => {
   });
 
   it('should apply module hooks if any', () => {
+    bootstrapper.unarm('collectHooks', 'isState');
+
     class Component {}
 
     class Module {
@@ -99,7 +136,6 @@ describe('Function "bootstrapStates"', () => {
     bootstrapper.bootstrapHooks.and.returnValue(new Map<any, Hooks>([
       [Component, {onEnter: Module.onComponentEnter}]
     ]));
-    bootstrapper.collectHooks.and.returnValue(new Map<any, Hooks>());
 
     const componentMetadata = {name: 'component', url: '/', component: Component};
 
@@ -120,6 +156,8 @@ describe('Function "bootstrapStates"', () => {
   });
 
   it('should mix hooks defined in component and hooks defined in module', () => {
+    bootstrapper.unarm('isState');
+
     class Component1 {
       public static onExit() {}
     }
