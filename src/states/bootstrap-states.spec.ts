@@ -1,3 +1,4 @@
+import * as ngms from 'ng-metasys';
 import * as reflection from '../core/reflection';
 import * as tokens from '../core/tokens';
 import * as bootstrapHooks from '../hooks/bootstrap-hooks';
@@ -6,6 +7,8 @@ import * as collectHooks from '../hooks/collect-hooks';
 import * as applyStates from './apply-states';
 import * as checkState from './check-state';
 import bootstrapStates from './bootstrap-states';
+import States from './states-decorator';
+import {OnEnter} from '../hooks/hook-decorators';
 
 class Bootstrapper {
   public applyStates = spyOn(applyStates, 'default');
@@ -13,6 +16,7 @@ class Bootstrapper {
   public checkState = spyOn(checkState, 'default');
   public collectHooks = spyOn(collectHooks, 'default');
   public isState = spyOn(reflection, 'isState');
+  public isComponent = spyOn(ngms, 'isComponent');
 
   public ngModule = {};
 
@@ -216,5 +220,45 @@ describe('Function "bootstrapStates"', () => {
         onRetain: Module.onComponent2Retain
       }]
     ]);
+  });
+});
+
+describe('Decorator "States" and function "bootstrapStates"', () => {
+  let bootstrapper: Bootstrapper;
+
+  beforeEach(() => {
+    bootstrapper = new Bootstrapper();
+    bootstrapper.bootstrapHooks.and.callThrough();
+    bootstrapper.checkState.and.callThrough();
+    bootstrapper.collectHooks.and.callThrough();
+    bootstrapper.isState.and.callThrough();
+  });
+
+  it('should work together', () => {
+    bootstrapper.isComponent.and.returnValue(true);
+
+    class Component {}
+
+    @States([
+      {name: 'component', url: '/', component: Component}
+    ])
+    class Module {
+      @OnEnter(Component)
+      public static onComponentEnter() {}
+    }
+
+    bootstrapStates(bootstrapper.ngModule as any, Module);
+
+    expect(bootstrapper.applyStates)
+      .toHaveBeenCalledWith(bootstrapper.ngModule, [
+        {name: 'component', url: '/', component: Component}
+      ], jasmine.any(Map));
+
+    const hooks = bootstrapper.applyStates.calls.argsFor(0)[2];
+
+    expect([...hooks.entries()])
+      .toEqual([
+        [Component, {onEnter: Module.onComponentEnter}]
+      ]);
   });
 });
