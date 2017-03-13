@@ -1,5 +1,11 @@
 # ngms-plugin-ui-router-states
 
+[![Latest Stable Version](https://img.shields.io/npm/v/ngms-plugin-ui-router-states.svg)](https://www.npmjs.com/package/ngms-plugin-ui-router-states)
+[![License](https://img.shields.io/npm/l/ngms-plugin-ui-router-states.svg)](./LICENSE)
+[![Build Status](https://img.shields.io/travis/Lodin/ngms-plugin-ui-router-states/master.svg)](https://travis-ci.org/Lodin/ngms-plugin-ui-router-states)
+
+[![Test Coverage](https://img.shields.io/codecov/c/github/Lodin/ngms-plugin-ui-router-states/master.svg)](https://codecov.io/gh/Lodin/ngms-plugin-ui-router-states)
+
 A plugin for [ng-metasys](https://github.com/Lodin/ng-metasys) adding support for 
 [angular-ui-router](https://github.com/angular-ui/ui-router). 
 
